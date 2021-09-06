@@ -6,32 +6,35 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from dataclasses import Vector
-from dataclasses import Point
+from data import Vector
+from data import Point
 
 
 @dataclass
 class Box:
-    positon: Point
+    begin_position: Point
+    end_position: Point
     # motion: Vector
-    size: Vector
-    color: tuple
-    angle: float
-    scale: Vector
+    # size: Vector
+    # color: tuple
+    # angle: float
+    # scale: Vector
 
     def draw(self):
         glPushMatrix()
-
-        glTranslate(self.positon.x, self.positon.y)
-        glScale(self.scale.x, self.scale.y , 1)
+        # print("Begin point: {}, {}".format(self.begin_position.x, self.begin_position.y))
+        # print("End point: {}, {}".format(self.end_position.x, self.end_position.y))
+        # glTranslate(self.positon.x, self.positon.y)
+        # glScale(self.scale.x, self.scale.y , 1)
 
         glBegin(GL_TRIANGLE_FAN)
         glColor3f(0.6, 1.0, 1.0)
-        glVertex2f(self.size.x/2, self.size.y/2)
-        glVertex2f(self.size.x/2, self.size.y/2)
-        glVertex2f(self.size.x/2, self.size.y/2)
-        glVertex2f(self.size.x/2, self.size.y/2)
+        glVertex2f(self.begin_position.x, self.begin_position.y) # (x1, y1)
+        glVertex2f(self.end_position.x, self.begin_position.y) # (x2, y1)
+        glVertex2f(self.end_position.x, self.end_position.y) # (x2, y2)
+        glVertex2f(self.begin_position.x, self.end_position.y) # (x1, y2)
         glEnd()
-        glRotate(self.angle, 0, 0, 1)
+
+        # glRotate(self.angle, 0, 0, 1)
 
         glPopMatrix()
