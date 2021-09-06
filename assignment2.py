@@ -5,8 +5,12 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 
-x_pos = None
-y_pos = None
+x_pos_begin = None
+x_pos_end = None
+y_pos_begin = None
+y_pos_end = None
+
+
 
 max_x = 800
 max_y = 600
@@ -50,7 +54,6 @@ def display():
 
 def game_loop():
     global x_pos, y_pos
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -60,9 +63,19 @@ def game_loop():
                 pygame.quit()
                 quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                x_pos = pygame.mouse.get_pos()[0]
-                y_pos = max_y - pygame.mouse.get_pos()[1]
+            if event.button == 1: # left button -> rectangle
+                x_pos_begin = pygame.mouse.get_pos()[0]
+                y_pos_begin = max_y - pygame.mouse.get_pos()[1]
+            elif event.button == 3: # right button -> line
+                x_pos_begin = pygame.mouse.get_pos()[0]
+                y_pos_begin = max_y - pygame.mouse.get_pos()[1]
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1: # left button -> rectangle
+                x_pos_end = pygame.mouse.get_pos()[0]
+                y_pos_end = max_y - pygame.mouse.get_pos()[1]
+            elif event.button == 3: # right button -> line
+                x_pos_end = pygame.mouse.get_pos()[0]
+                y_pos_end = max_y - pygame.mouse.get_pos()[1]
     update()
     display()
 
