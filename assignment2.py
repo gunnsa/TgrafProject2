@@ -20,6 +20,8 @@ from OpenGL.GLU import *
 
 from box import Box
 from line import Line
+from cannon import Cannon
+from cannonball import Cannonball
 from data import Point, Vector
 
 x_pos_begin = None
@@ -27,9 +29,11 @@ x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
-point1 = Point(350,10)
-point2 = Point(450,30)
-cannon = Box(point1, point2)
+cannon_point = Point(400,10)
+cannon = Cannon(cannon_point, 0)
+
+ball_point = Point(400, 35)
+cannonball = Cannonball(ball_point)
 
 new_obstacle = None
 
@@ -49,8 +53,9 @@ def init_game():
     glClearColor(0.0, 0.0, 0.0, 1.0)
 
 
-def update():
+def update(clock):
     global going_left, going_right, cannon, max_y
+    delta_time = clock.tick(60) / 1000.0
     if going_right:
         if cannon.end_position.x < 800:
             cannon.begin_position.x += 0.1
@@ -64,9 +69,17 @@ def update():
         new_end_point = Point(pos[0], max_y - pos[1])
         new_obstacle.end_position = new_end_point
 
+    pressed = pygame.key.get_pressed()
+    if pressed[pygame.K_LEFT]:
+        if cannon.angle < 70:
+            cannon.angle += delta_time * 50
+    if pressed[pygame.K_RIGHT]:
+        if cannon.angle > -70:
+            cannon.angle -= delta_time * 50
+
 
 def display():
-    global objects, cannon
+    global objects, cannon, cannonball
     glClear(GL_COLOR_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -77,6 +90,7 @@ def display():
     gluOrtho2D(0, 800, 0, 600)
 
     cannon.draw()
+    cannonball.draw()
 
     if new_obstacle:
         new_obstacle.draw()
@@ -98,15 +112,15 @@ def game_loop():
             if event.key == K_ESCAPE:
                 pygame.quit()
                 quit()
-            if event.key == K_LEFT:
-                going_left = True
-            if event.key == K_RIGHT:
-                going_right = True
-        if event.type == pygame.KEYUP:
-            if event.key == K_LEFT:
-                going_left = False
-            if event.key == K_RIGHT:
-                going_right = False
+        #     if event.key == K_LEFT:
+        #         going_left = True
+        #     if event.key == K_RIGHT:
+        #         going_right = True
+        # if event.type == pygame.KEYUP:
+        #     if event.key == K_LEFT:
+        #         going_left = False
+        #     if event.key == K_RIGHT:
+        #         going_right = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # left button -> rectangle
                 x_pos_begin = pygame.mouse.get_pos()[0]
@@ -129,7 +143,8 @@ def game_loop():
                 y_pos_end = max_y - pygame.mouse.get_pos()[1]
                 objects.append(new_obstacle)
                 new_obstacle = None
-    update()
+    clock = pygame.time.Clock()
+    update(clock)
     display()
 
 

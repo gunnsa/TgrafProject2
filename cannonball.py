@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import math
+
 import pygame
 from pygame.locals import *
 
@@ -11,23 +13,18 @@ from data import Point
 
 
 @dataclass
-class Box:
+class Cannonball:
     begin_position: Point
-    end_position: Point
-    # motion: Vector
-    # size: Vector
-    # color: tuple
-    # scale: Vector
 
     def draw(self):
+        triangles = 10
+        radius = 1
+    
         glPushMatrix()
 
-        glBegin(GL_TRIANGLE_FAN)
+        glBegin(GL_TRIANGLE_STRIP)
         glColor3f(0.6, 1.0, 1.0)
         glVertex2f(self.begin_position.x, self.begin_position.y) # (x1, y1)
-        glVertex2f(self.end_position.x, self.begin_position.y) # (x2, y1)
-        glVertex2f(self.end_position.x, self.end_position.y) # (x2, y2)
-        glVertex2f(self.begin_position.x, self.end_position.y) # (x1, y2)
         glEnd()
 
         glPopMatrix()
