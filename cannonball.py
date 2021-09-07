@@ -14,17 +14,32 @@ from data import Point
 
 @dataclass
 class Cannonball:
-    begin_position: Point
+    position: Point
 
     def draw(self):
         triangles = 10
-        radius = 1
-    
+        _theta = 0
+        radius = 50
+        theta = (_theta-90) * math.pi/180
         glPushMatrix()
 
         glBegin(GL_TRIANGLE_STRIP)
+        x = self.position.x + (radius * math.cos(theta))
+        y = self.position.y + (radius * math.sin(theta))
+        glVertex2f(x, y)
+
+        _theta += 10
+        theta = (_theta-90) * math.pi/180
+
+        while theta <= 520:
+            theta = (_theta-90) * math.pi/180
+            x = self.position.x + (radius * math.cos(theta))
+            y = self.position.y + (radius * math.sin(theta))
+            glVertex2f(x, y)
+            glVertex2f(self.position.x, self.position.y) # center point
+            _theta += 10
+
         glColor3f(0.6, 1.0, 1.0)
-        glVertex2f(self.begin_position.x, self.begin_position.y) # (x1, y1)
         glEnd()
 
         glPopMatrix()

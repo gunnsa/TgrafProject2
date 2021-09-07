@@ -32,7 +32,7 @@ y_pos_end = None
 cannon_point = Point(400,10)
 cannon = Cannon(cannon_point, 0)
 
-ball_point = Point(400, 35)
+ball_point = Point(400, 300)
 cannonball = Cannonball(ball_point)
 
 new_obstacle = None
