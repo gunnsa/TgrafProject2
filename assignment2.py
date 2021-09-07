@@ -27,6 +27,13 @@ x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
+point1 = Point(350,10)
+point2 = Point(450,30)
+cannon = Box(point1, point2)
+
+going_left = False
+going_right = False
+
 max_x = 800
 max_y = 600
 
@@ -41,12 +48,18 @@ def init_game():
 
 
 def update():
-    global square
-    # if x_pos and y_pos:
-    #     square.append([x_pos - (size/2), y_pos - (size/2), x_pos + (size/2), y_pos + (size/2)]) #x1, y1, x2, y2
+    global going_left, going_right, cannon
+    if going_right:
+        if cannon.end_position.x < 800:
+            cannon.begin_position.x += 0.1
+            cannon.end_position.x += 0.1
+    if going_left:
+        if cannon.begin_position.x > 0:
+            cannon.begin_position.x -= 0.1
+            cannon.end_position.x -= 0.1
 
 def display():
-    global objects
+    global objects, cannon
     glClear(GL_COLOR_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -56,26 +69,17 @@ def display():
     glViewport(0, 0, 800, 600)
     gluOrtho2D(0, 800, 0, 600)
 
-    point1 = Point(350,0)
-    point2 = Point(450,20)
-    cannon = Box(point1, point2)
     cannon.draw()
 
     for object in objects:
         object.draw()
-        # glBegin(GL_POLYGON)
-        # glColor3f(0.6, 1.0, 1.0)
-        # glVertex2f(coordinate[0], coordinate[1])#x1 ,y1
-        # glVertex2f(coordinate[2], coordinate[1])#x2, y1
-        # glVertex2f(coordinate[2], coordinate[3])#x2, y2
-        # glVertex2f(coordinate[0], coordinate[3])#x1, y2
-        # glEnd()
 
     pygame.display.flip()
 
 
 def game_loop():
     global objects, x_pos_begin, y_pos_begin, x_pos_end, y_pos_end
+    global going_left, going_right
     for event in pygame.event.get():
         point1 = None
         point2 = None
