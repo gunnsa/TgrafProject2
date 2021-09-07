@@ -31,6 +31,8 @@ point1 = Point(350,10)
 point2 = Point(450,30)
 cannon = Box(point1, point2)
 
+new_obstacle = None
+
 going_left = False
 going_right = False
 
@@ -48,7 +50,7 @@ def init_game():
 
 
 def update():
-    global going_left, going_right, cannon
+    global going_left, going_right, cannon, max_y
     if going_right:
         if cannon.end_position.x < 800:
             cannon.begin_position.x += 0.1
@@ -57,6 +59,11 @@ def update():
         if cannon.begin_position.x > 0:
             cannon.begin_position.x -= 0.1
             cannon.end_position.x -= 0.1
+    if new_obstacle:
+        pos = pygame.mouse.get_pos()
+        new_end_point = Point(pos[0], max_y - pos[1])
+        new_obstacle.end_position = new_end_point
+
 
 def display():
     global objects, cannon
@@ -71,6 +78,9 @@ def display():
 
     cannon.draw()
 
+    if new_obstacle:
+        new_obstacle.draw()
+
     for object in objects:
         object.draw()
 
@@ -79,10 +89,8 @@ def display():
 
 def game_loop():
     global objects, x_pos_begin, y_pos_begin, x_pos_end, y_pos_end
-    global going_left, going_right
+    global going_left, going_right, new_obstacle
     for event in pygame.event.get():
-        point1 = None
-        point2 = None
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
@@ -103,24 +111,24 @@ def game_loop():
             if event.button == 1: # left button -> rectangle
                 x_pos_begin = pygame.mouse.get_pos()[0]
                 y_pos_begin = max_y - pygame.mouse.get_pos()[1]
+                point = Point(x_pos_begin, y_pos_begin)
+                new_obstacle = Box(point, point)
             elif event.button == 3: # right button -> line
                 x_pos_begin = pygame.mouse.get_pos()[0]
                 y_pos_begin = max_y - pygame.mouse.get_pos()[1]
+                point = Point(x_pos_begin, y_pos_begin)
+                new_obstacle = Line(point, point)
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1: # left button -> rectangle
                 x_pos_end = pygame.mouse.get_pos()[0]
                 y_pos_end = max_y - pygame.mouse.get_pos()[1]
-                point1 = Point(x_pos_begin, y_pos_begin)
-                point2 = Point(x_pos_end, y_pos_end)
-                box = Box(point1, point2)
-                objects.append(box)
+                objects.append(new_obstacle)
+                new_obstacle = None
             elif event.button == 3: # right button -> line
                 x_pos_end = pygame.mouse.get_pos()[0]
                 y_pos_end = max_y - pygame.mouse.get_pos()[1]
-                point1 = Point(x_pos_begin, y_pos_begin)
-                point2 = Point(x_pos_end, y_pos_end)
-                line = Line(point1, point2)
-                objects.append(line)
+                objects.append(new_obstacle)
+                new_obstacle = None
     update()
     display()
 
