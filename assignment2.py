@@ -18,6 +18,8 @@ except ImportError:
     pass
 from OpenGL.GLU import *
 
+import math
+
 from box import Box
 from line import Line
 from cannon import Cannon
@@ -29,11 +31,15 @@ x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
-cannon_point = Point(400,10)
-cannon = Cannon(cannon_point, 0)
+ball_point = Point(400, 110)
+cannonball = Cannonball(ball_point, Vector(0, 0))
 
-ball_point = Point(400, 300)
-cannonball = Cannonball(ball_point)
+cannon_point = Point(400,10)
+cannon = Cannon(cannon_point, 0, cannonball)
+
+goal_point1 = Point(300, 500)
+goal_point2 = Point(500, 600)
+goal = Box(goal_point1, goal_point2)
 
 new_obstacle = None
 
@@ -45,6 +51,8 @@ max_y = 600
 
 size = 60
 
+playing = False
+
 objects = []
 
 def init_game():
@@ -54,7 +62,7 @@ def init_game():
 
 
 def update(clock):
-    global going_left, going_right, cannon, max_y
+    global going_left, going_right, cannon, max_y, playing
     delta_time = clock.tick(60) / 1000.0
     if going_right:
         if cannon.end_position.x < 800:
@@ -76,6 +84,19 @@ def update(clock):
     if pressed[pygame.K_RIGHT]:
         if cannon.angle > -70:
             cannon.angle -= delta_time * 50
+    if pressed[pygame.K_z]:
+        if not playing:
+            cannon.child = None
+
+            new_cannon_point_x = cannon.position.x + (100 * math.cos((cannon.angle + 90) * (math.pi/180)))
+            new_cannon_point_y = cannon.position.y + (100 * math.sin((cannon.angle + 90) * (math.pi/180)))
+            new_cannon_point = Point(new_cannon_point_x, new_cannon_point_y)
+
+            motion = Vector(-math.sin(cannon.angle * (math.pi / 180)), math.cos(cannon.angle * (math.pi / 180)))
+
+            cannonball.position = new_cannon_point
+            cannonball.motion = motion
+            playing = True
 
 
 def display():
@@ -90,7 +111,11 @@ def display():
     gluOrtho2D(0, 800, 0, 600)
 
     cannon.draw()
-    cannonball.draw()
+    goal.draw()
+
+    if cannon.child == None:
+        cannonball.draw()
+        cannonball.update()
 
     if new_obstacle:
         new_obstacle.draw()
