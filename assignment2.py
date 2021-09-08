@@ -58,7 +58,21 @@ def init_game():
     glClearColor(0.0, 0.0, 0.0, 1.0)
 
 
+def collision_detector():
+    # dynamic check for single point crossing diagonal line
+    # Use formula for intersection of ray with line (explained in “Examples 1” on lecture page)
+    # When t.hit is found, check if that time is within the current frame (between 0 and deltaTime)
+    # If so, check to see if P.hit is between the end points of the line
+    # If so, collision happened!
+
+    # for all obsticles
+    #   check if cannonball collides
+    #   if so: bounce back
+    pass
+
+
 def update(clock):
+    collision_detector()
     global cannon, max_y, playing
     delta_time = clock.tick(60) / 1000.0
     if new_obstacle:
@@ -86,6 +100,8 @@ def update(clock):
             cannonball.position = new_cannon_point
             cannonball.motion = motion
             playing = True
+
+
 
 
 def display():
