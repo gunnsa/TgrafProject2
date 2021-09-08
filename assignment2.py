@@ -64,14 +64,14 @@ def init_game():
 def update(clock):
     global going_left, going_right, cannon, max_y, playing
     delta_time = clock.tick(60) / 1000.0
-    if going_right:
-        if cannon.end_position.x < 800:
-            cannon.begin_position.x += 0.1
-            cannon.end_position.x += 0.1
-    if going_left:
-        if cannon.begin_position.x > 0:
-            cannon.begin_position.x -= 0.1
-            cannon.end_position.x -= 0.1
+    # if going_right:
+    #     if cannon.end_position.x < 800:
+    #         cannon.begin_position.x += 0.1
+    #         cannon.end_position.x += 0.1
+    # if going_left:
+    #     if cannon.begin_position.x > 0:
+    #         cannon.begin_position.x -= 0.1
+    #         cannon.end_position.x -= 0.1
     if new_obstacle:
         pos = pygame.mouse.get_pos()
         new_end_point = Point(pos[0], max_y - pos[1])
@@ -80,7 +80,7 @@ def update(clock):
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_LEFT]:
         if cannon.angle < 70:
-            cannon.angle += delta_time * 50
+            cannon.angle += delta_time * 100
     if pressed[pygame.K_RIGHT]:
         if cannon.angle > -70:
             cannon.angle -= delta_time * 50
