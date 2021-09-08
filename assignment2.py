@@ -43,9 +43,6 @@ goal = Box(goal_point1, goal_point2)
 
 new_obstacle = None
 
-going_left = False
-going_right = False
-
 max_x = 800
 max_y = 600
 
@@ -62,16 +59,8 @@ def init_game():
 
 
 def update(clock):
-    global going_left, going_right, cannon, max_y, playing
+    global cannon, max_y, playing
     delta_time = clock.tick(60) / 1000.0
-    # if going_right:
-    #     if cannon.end_position.x < 800:
-    #         cannon.begin_position.x += 0.1
-    #         cannon.end_position.x += 0.1
-    # if going_left:
-    #     if cannon.begin_position.x > 0:
-    #         cannon.begin_position.x -= 0.1
-    #         cannon.end_position.x -= 0.1
     if new_obstacle:
         pos = pygame.mouse.get_pos()
         new_end_point = Point(pos[0], max_y - pos[1])
@@ -83,7 +72,7 @@ def update(clock):
             cannon.angle += delta_time * 100
     if pressed[pygame.K_RIGHT]:
         if cannon.angle > -70:
-            cannon.angle -= delta_time * 50
+            cannon.angle -= delta_time * 100
     if pressed[pygame.K_z]:
         if not playing:
             cannon.child = None
@@ -127,8 +116,7 @@ def display():
 
 
 def game_loop():
-    global objects, x_pos_begin, y_pos_begin, x_pos_end, y_pos_end
-    global going_left, going_right, new_obstacle
+    global objects, x_pos_begin, y_pos_begin, x_pos_end, y_pos_end, new_obstacle
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -137,15 +125,6 @@ def game_loop():
             if event.key == K_ESCAPE:
                 pygame.quit()
                 quit()
-        #     if event.key == K_LEFT:
-        #         going_left = True
-        #     if event.key == K_RIGHT:
-        #         going_right = True
-        # if event.type == pygame.KEYUP:
-        #     if event.key == K_LEFT:
-        #         going_left = False
-        #     if event.key == K_RIGHT:
-        #         going_right = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # left button -> rectangle
                 x_pos_begin = pygame.mouse.get_pos()[0]
