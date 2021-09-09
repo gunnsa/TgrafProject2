@@ -25,7 +25,7 @@ class Cannon:
         glTranslate(-self.position.x, -self.position.y, 0)
 
         glBegin(GL_TRIANGLE_FAN)
-        glColor3f(0.6, 1.0, 1.0)
+        glColor3f(0.0, 0.0, 0.0)
         glVertex2f(self.position.x - 15, self.position.y) # (x1, y1)
         glVertex2f(self.position.x + 15, self.position.y) # (x2, y1)
         glVertex2f(self.position.x + 15, self.position.y + 70) # (x2, y2)

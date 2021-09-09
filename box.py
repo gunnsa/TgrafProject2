@@ -16,14 +16,14 @@ class Box:
     end_position: Point
     # motion: Vector
     # size: Vector
-    # color: tuple
+    color: tuple
     # scale: Vector
 
     def draw(self):
         glPushMatrix()
 
         glBegin(GL_TRIANGLE_FAN)
-        glColor3f(0.6, 1.0, 1.0)
+        glColor3f(*self.color)
         glVertex2f(self.begin_position.x, self.begin_position.y) # (x1, y1)
         glVertex2f(self.end_position.x, self.begin_position.y) # (x2, y1)
         glVertex2f(self.end_position.x, self.end_position.y) # (x2, y2)

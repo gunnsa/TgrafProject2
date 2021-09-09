@@ -31,7 +31,7 @@ x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
-ball_point = Point(400, 110)
+ball_point = Point(400, 100)
 cannonball = Cannonball(ball_point, Vector(0, 0), ball_point)
 
 cannon_point = Point(400,10)
@@ -39,7 +39,7 @@ cannon = Cannon(cannon_point, 0, cannonball)
 
 goal_point1 = Point(300, 500)
 goal_point2 = Point(500, 600)
-goal = Box(goal_point1, goal_point2)
+goal = Box(goal_point1, goal_point2, (0.5, 1.0, 0.5))
 
 new_obstacle = None
 
@@ -55,7 +55,7 @@ obstacles = []
 def init_game():
     pygame.display.init()
     pygame.display.set_mode((max_x, max_y), DOUBLEBUF | OPENGL)
-    glClearColor(0.0, 0.0, 0.0, 1.0)
+    glClearColor(1.0, 1.0, 1.0, 1.0)
 
 
 def collision_detector(delta_time):
@@ -75,16 +75,14 @@ def collision_detector(delta_time):
         for obstacle in obstacles:
             if isinstance(obstacle, Box):
                 point1 = Point(obstacle.begin_position.x, obstacle.begin_position.y)
-                point2 = Point(obstacle.begin_position.x, obstacle.end_position.y)
+                point2 = Point(obstacle.end_position.x, obstacle.begin_position.y)
                 point3 = Point(obstacle.end_position.x, obstacle.end_position.y)
-                point4 = Point(obstacle.end_position.x, obstacle.begin_position.y)
+                point4 = Point(obstacle.begin_position.x, obstacle.end_position.y)
 
                 lines.append(Line(point1, point2))
                 lines.append(Line(point2, point3))
                 lines.append(Line(point3, point4))
                 lines.append(Line(point4, point1))
-
-
 
             if isinstance(obstacle, Line):
                 lines.append(obstacle)
@@ -100,7 +98,10 @@ def collision_detector(delta_time):
                 t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
                 # p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
                 p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
-                if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
+                b_min_a = Point(line.end_position.x - cannonball.position.x, line.end_position.y - cannonball.position.y)
+                p_hit_min_a = Point(p_hit.x - line.begin_position.x, p_hit.y - line.begin_position.y)
+                # if (((b_min_a.x * p_hit_min_a.x) - (b_min_a.y * p_hit_min_a.y)) < abs(1)) or (((b_min_a.y * p_hit_min_a.y) - (b_min_a.x * p_hit_min_a.x)) < abs(1)):
+                if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x):
                     two_c_dot_n = (2 * (cannonball.motion.x * n.x) + 2 * (cannonball.motion.y * n.y))
                     n_dot_n = (n.x * n.x) + (n.y * n.y)
                     divide = two_c_dot_n / n_dot_n
@@ -136,7 +137,7 @@ def update(clock):
             new_cannon_point_y = cannon.position.y + (100 * math.sin((cannon.angle + 90) * (math.pi/180)))
             new_cannon_point = Point(new_cannon_point_x, new_cannon_point_y)
 
-            motion = Vector((-math.sin(cannon.angle * (math.pi / 180)) + cannonball.motion.x) * 300, (math.cos(cannon.angle * (math.pi / 180)) + cannonball.motion.y) * 300)
+            motion = Vector((-math.sin(cannon.angle * (math.pi / 180)) + cannonball.motion.x) * 400, (math.cos(cannon.angle * (math.pi / 180)) + cannonball.motion.y) * 400)
 
             cannonball.position = new_cannon_point
             cannonball.motion = motion
@@ -186,7 +187,7 @@ def game_loop():
                 x_pos_begin = pygame.mouse.get_pos()[0]
                 y_pos_begin = max_y - pygame.mouse.get_pos()[1]
                 point = Point(x_pos_begin, y_pos_begin)
-                new_obstacle = Box(point, point)
+                new_obstacle = Box(point, point, (0.439216, 0.576471, 0.858824))
             elif event.button == 3: # right button -> line
                 x_pos_begin = pygame.mouse.get_pos()[0]
                 y_pos_begin = max_y - pygame.mouse.get_pos()[1]

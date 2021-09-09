@@ -20,11 +20,12 @@ class Cannonball:
 
     def draw(self):
         _theta = 0
-        radius = 18
+        radius = 12
         theta = (_theta-90) * math.pi/180
         glPushMatrix()
 
         glBegin(GL_TRIANGLE_STRIP)
+        glColor3f(1.0, 0.0, 0.0)
         x = self.position.x + (radius * math.cos(theta))
         y = self.position.y + (radius * math.sin(theta))
         glVertex2f(x, y)
@@ -40,7 +41,6 @@ class Cannonball:
             glVertex2f(self.position.x, self.position.y) # center point
             _theta += 10
 
-        glColor3f(0.6, 1.0, 1.0)
         glEnd()
 
         glPopMatrix()

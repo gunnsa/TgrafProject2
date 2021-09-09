@@ -28,7 +28,7 @@ class Line:
         # glScale(self.scale.x, self.scale.y , 1)
 
         glBegin(GL_LINES)
-        glColor3f(0.6, 1.0, 1.0)
+        glColor3f(1.0, 0.0, 1.0)
         glVertex2f(self.begin_position.x, self.begin_position.y) # (x1, y1)
         glVertex2f(self.end_position.x, self.end_position.y) # (x2, y2)
         glEnd()
