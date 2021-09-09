@@ -73,9 +73,7 @@ def collision_detector(delta_time):
     lines = []
     if playing:
         for obstacle in obstacles:
-            # print(type(obstacle))
             if isinstance(obstacle, Box):
-                # print("box")
                 point1 = Point(obstacle.begin_position.x, obstacle.begin_position.y)
                 point2 = Point(obstacle.begin_position.x, obstacle.end_position.y)
                 point3 = Point(obstacle.end_position.x, obstacle.end_position.y)
@@ -86,54 +84,35 @@ def collision_detector(delta_time):
                 lines.append(Line(point3, point4))
                 lines.append(Line(point4, point1))
 
-                # print("obstacle begin pos: ({}, {}) - obstacle end pos: ({}, {})".format(obstacle.begin_position.x, obstacle.begin_position.y, obstacle.end_position.x, obstacle.end_position.y))
 
-                # print("Point1 : ({},{})".format(point1.x, point1.y))
-                # print("Point2 : ({},{})".format(point2.x, point2.y))
-                # print("Point3 : ({},{})".format(point3.x, point3.y))
-                # print("Point4 : ({},{})".format(point4.x, point4.y))
 
-                # print("Cannonball position: ({}, {})".format(cannonball.position.x, cannonball.position.y))
             if isinstance(obstacle, Line):
-                # print("line")
                 lines.append(obstacle)
         for index, line in enumerate(lines):
             n = Vector(-1 * (line.end_position.y - line.begin_position.y), line.end_position.x - line.begin_position.x)
-            # print('n', n)
             b_min_a = Vector(line.begin_position.x - cannonball.position.x, line.begin_position.y - cannonball.position.y)
-            # print('b_min_a', b_min_a)
             ndotba = (n.x * b_min_a.x) + (n.y * b_min_a.y)
-            # print('ndotba', ndotba)
             ndotmotion = (n.x * cannonball.motion.x) + (n.y * cannonball.motion.y)
-            # print('ndotmotion', ndotmotion)
+            if ndotmotion == 0:
+                ndotmotion = 1
             thit = ndotba / ndotmotion
-            print('delta_time', delta_time)
-            print('thit', thit)
             if thit >= 0 and thit <= delta_time:
-                print("COLLISION")
                 t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
                 # p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
                 p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
                 if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
-                    print("YAY")
-                    # r = C - ((2*(C dot n))/(n dot n)) dot n
-                    two_c_dot_n = 2 * ((cannonball.motion.x * n.x) + (cannonball.motion.y * n.y))
+                    two_c_dot_n = (2 * (cannonball.motion.x * n.x) + 2 * (cannonball.motion.y * n.y))
                     n_dot_n = (n.x * n.x) + (n.y * n.y)
                     divide = two_c_dot_n / n_dot_n
-                    divide_dot_n = (divide * n.x) + (divide * n.y)
-                    r = Vector(cannonball.motion.x - divide_dot_n, cannonball.motion.y - divide_dot_n)
+                    divide_dot_n = Point(divide * n.x, divide * n.y)
+                    r = Vector(cannonball.motion.x - divide_dot_n.x, cannonball.motion.y - divide_dot_n.y)
                     cannonball.motion = r
  
-            # print("p hit: ({}, {})".format(p_hit.x, p_hit.y))
-            # print("cannonball pos: ({}, {})".format(cannonball.position.x, cannonball.position.y))
-            # print("cannonball pos: ({}, {})".format(cannonball.prevposition.x, cannonball.prevposition.y))
 
             # if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
-            #     print("YAY")
 
 def update(clock):
     delta_time = clock.tick(60) / 1000.0
-    # print('time', delta_time)
 
     collision_detector(delta_time)
     global cannon, max_y, playing
@@ -157,8 +136,7 @@ def update(clock):
             new_cannon_point_y = cannon.position.y + (100 * math.sin((cannon.angle + 90) * (math.pi/180)))
             new_cannon_point = Point(new_cannon_point_x, new_cannon_point_y)
 
-            motion = Vector((-math.sin(cannon.angle * (math.pi / 180))+ cannonball.motion.x)*100, (math.cos(cannon.angle * (math.pi / 180))+ cannonball.motion.y)*100)
-            print("LALA",motion.x, motion.y)
+            motion = Vector((-math.sin(cannon.angle * (math.pi / 180)) + cannonball.motion.x) * 300, (math.cos(cannon.angle * (math.pi / 180)) + cannonball.motion.y) * 300)
 
             cannonball.position = new_cannon_point
             cannonball.motion = motion
