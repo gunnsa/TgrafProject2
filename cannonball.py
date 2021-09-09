@@ -16,6 +16,7 @@ from data import Point
 class Cannonball:
     position: Point
     motion: Vector
+    prevposition: Point
 
     def draw(self):
         _theta = 0
@@ -45,5 +46,7 @@ class Cannonball:
         glPopMatrix()
 
     def update(self):
+        self.prevposition.x = self.position.x
+        self.prevposition.y = self.position.y
         self.position.x += (self.motion.x * 5)
         self.position.y += (self.motion.y * 5)
