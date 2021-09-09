@@ -45,8 +45,8 @@ class Cannonball:
 
         glPopMatrix()
 
-    def update(self):
+    def update(self, deltaTime):
         self.prevposition.x = self.position.x
         self.prevposition.y = self.position.y
-        self.position.x += (self.motion.x * 5)
-        self.position.y += (self.motion.y * 5)
+        self.position.x += (self.motion.x * deltaTime)
+        self.position.y += (self.motion.y * deltaTime)

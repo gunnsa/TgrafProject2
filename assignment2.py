@@ -98,35 +98,40 @@ def collision_detector(delta_time):
                 # print("line")
                 lines.append(obstacle)
         for index, line in enumerate(lines):
-            print("line {} begin pos: ({}, {}) - line end pos: ({}, {})".format(index, line.begin_position.x, line.begin_position.y, line.end_position.x, line.end_position.y))
             n = Vector(-1 * (line.end_position.y - line.begin_position.y), line.end_position.x - line.begin_position.x)
-            print("n: ({}, {})".format(n.x, n.y))
-            # print("cannonball motion vector: ({}, {})".format(cannonball.motion.x, cannonball.motion.y))
+            print('n', n)
             b_min_a = Vector(line.begin_position.x - cannonball.position.x, line.begin_position.y - cannonball.position.y)
-            # b_min_a = Point(line.begin_position.x - cannonball.position.x, line.begin_position.y - cannonball.position.y)
+            print('b_min_a', b_min_a)
             ndotba = (n.x * b_min_a.x) + (n.y * b_min_a.y)
-            print(ndotba)
+            print('ndotba', ndotba)
             ndotmotion = (n.x * cannonball.motion.x) + (n.y * cannonball.motion.y)
-            print(ndotmotion)
+            print('ndotmotion', ndotmotion)
             thit = ndotba / ndotmotion
-            print(thit)
-            # t_hit = ((n.x * b_min_a.x) + (n.y * b_min_a.y)) / ((n.x * cannonball.motion.x) + (n.y * cannonball.motion.y))
-            # print("line {} - t hit: {}".format(index, t_hit))
-            # print('time', delta_time)
-            # print("t_hit: {}".format(t_hit))
+            print('thit', thit)
             if thit >= 0 and thit <= delta_time:
                 print("COLLISION")
-                pass
-
-            t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
-            p_hit = Point(400 + t_hit_times_c.x, 110 + t_hit_times_c.y)
-
+                t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
+                # p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
+                p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
+                if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
+                    print("YAY")
+                    # c -  2(c dot n) / n dot n ) dot n  eða c - 2(c dot skritið n) sinnum skrítið n
+                    weirdn = math.sqrt((n.x**2) + (n.y**2))
+                    nx = n.x/weirdn
+                    ny = n.y/weirdn
+                    step1 = Point(cannonball.motion.x * nx, cannonball.motion.y * ny)
+                    step2 = 2*step1.x+ 2*step1.y
+                    step3 = Point(step2 * nx, step2*ny)
+                    r = Vector(n.x - step3.x, n.y-step3.y)
+                    print(r)
+                    cannonball.motion = r
+ 
             # print("p hit: ({}, {})".format(p_hit.x, p_hit.y))
             # print("cannonball pos: ({}, {})".format(cannonball.position.x, cannonball.position.y))
             # print("cannonball pos: ({}, {})".format(cannonball.prevposition.x, cannonball.prevposition.y))
 
-            if cannonball.prevposition.x <= p_hit.x and cannonball.position.x >= p_hit.x and cannonball.prevposition.y <= p_hit.y and cannonball.position.y >= p_hit.y:
-                print("YAY")
+            # if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
+            #     print("YAY")
 
 def update(clock):
     delta_time = clock.tick(60) / 1000.0
@@ -154,13 +159,16 @@ def update(clock):
             new_cannon_point_y = cannon.position.y + (100 * math.sin((cannon.angle + 90) * (math.pi/180)))
             new_cannon_point = Point(new_cannon_point_x, new_cannon_point_y)
 
-            motion = Vector(-math.sin(cannon.angle * (math.pi / 180)), math.cos(cannon.angle * (math.pi / 180)))
+            motion = Vector((-math.sin(cannon.angle * (math.pi / 180))+ cannonball.motion.x)*100, (math.cos(cannon.angle * (math.pi / 180))+ cannonball.motion.y)*100)
+            print("LALA",motion.x, motion.y)
 
             cannonball.position = new_cannon_point
             cannonball.motion = motion
             playing = True
 
-def display():
+def display(clock):
+    delta_time = clock.tick(60) / 1000.0
+
     global obstacles, cannon, cannonball
     glClear(GL_COLOR_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
@@ -176,7 +184,7 @@ def display():
 
     if cannon.child == None:
         cannonball.draw()
-        cannonball.update()
+        cannonball.update(delta_time)
 
     if new_obstacle:
         new_obstacle.draw()
@@ -221,7 +229,7 @@ def game_loop():
                 new_obstacle = None
     clock = pygame.time.Clock()
     update(clock)
-    display()
+    display(clock)
 
 
 if __name__ == "__main__":
