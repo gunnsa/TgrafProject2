@@ -57,6 +57,35 @@ def init_game():
     pygame.display.set_mode((max_x, max_y), DOUBLEBUF | OPENGL)
     glClearColor(1.0, 1.0, 1.0, 1.0)
 
+def check_on_line(line, point):
+    horizontal_line = line.begin_position.y == line.end_position.y
+    vertical_line = line.begin_position.x == line.begin_position.x
+
+    if horizontal_line:
+        if (line.begin_position.x <= point.x and line.end_position.x >= point.x) or \
+            (line.end_position.x <= point.x and line.begin_position.x >= point.x):
+            return True
+    elif vertical_line:
+        if (line.begin_position.y <= point.y and line.end_position.y >= point.y) or \
+            (line.end_position.y <= point.y and line.begin_position.y >= point.y):
+            return True
+    else:
+        negative_line = (line.begin_position.y - line.end_position.y)/(line.begin_position.x - line.end_position.x) < 0
+        if negative_line and (line.begin_position.y >= point.y and line.end_position.y <= point.y and line.begin_position.x <= point.x and line.end_position.x >= point.x) or \
+            (line.begin_position.y <= point.y and line.end_position.y >= point.y and line.begin_position.x >= point.x and line.end_position.x <= point.x):
+            return True
+        elif (line.begin_position.x <= point.x and line.end_position.x >= point.x and line.begin_position.y <= point.y and line.end_position.y >= point.y) or \
+            (line.begin_position.x >= point.x and line.end_position.x <= point.x and line.begin_position.y >= point.y and line.end_position.y <= point.y):
+            return True
+    # print(vertical_line)
+
+
+
+    # if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) \
+    #     or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x) \
+    #         or (negative_line and (line.begin_position.y >= p_hit.y and line.end_position.y <= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x)):
+
+    pass
 
 def collision_detector(delta_time):
     # dynamic check for single point crossing diagonal line
@@ -98,10 +127,12 @@ def collision_detector(delta_time):
                 t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
                 # p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
                 p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
-                b_min_a = Point(line.end_position.x - cannonball.position.x, line.end_position.y - cannonball.position.y)
-                p_hit_min_a = Point(p_hit.x - line.begin_position.x, p_hit.y - line.begin_position.y)
                 # if (((b_min_a.x * p_hit_min_a.x) - (b_min_a.y * p_hit_min_a.y)) < abs(1)) or (((b_min_a.y * p_hit_min_a.y) - (b_min_a.x * p_hit_min_a.x)) < abs(1)):
-                if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x):
+                # negative_line = (line.begin_position.y - line.end_position.y)/(line.begin_position.x - line.end_position.x ) < 0
+                if check_on_line(line, p_hit):
+                # if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) \
+                #     or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x) \
+                #         or (negative_line and (line.begin_position.y >= p_hit.y and line.end_position.y <= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x)):
                     two_c_dot_n = (2 * (cannonball.motion.x * n.x) + 2 * (cannonball.motion.y * n.y))
                     n_dot_n = (n.x * n.x) + (n.y * n.y)
                     divide = two_c_dot_n / n_dot_n
