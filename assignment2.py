@@ -37,29 +37,7 @@ x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
-# ball_point = Point(400, 100)
-# cannonball = Cannonball(ball_point, Vector(0, 0), ball_point)
-
-# cannon_point = Point(400,10)
-# cannon = Cannon(cannon_point, 0, cannonball)
-
-# goal_point1 = Point(300, 550)
-# goal_point2 = Point(500, 597)
-# goal = Box(goal_point1, goal_point2, GREEN)
-
 obstacles = []
-# # Borders around game area
-# obstacles.append(Box(Point(0, 0), Point(3, 600), BLACK)) # Left side border
-# obstacles.append(Box(Point(0, 597), Point(800, 600), BLACK)) # Top left border
-# obstacles.append(Box(Point(297, 600), Point(300, 550), BLACK)) # Left goal border
-# obstacles.append(Box(Point(297, 547), Point(380, 550), BLACK)) # Left bottom border on goal
-# obstacles.append(Box(Point(420, 547), Point(503, 550), BLACK)) # Right bottom border on goal
-# obstacles.append(Box(Point(500, 550), Point(503, 600), BLACK)) # Right goal border
-# # obstacles.append(Box(Point(500, 597), Point(800, 600), BLACK)) # Top right border
-# obstacles.append(Box(Point(797, 0), Point(800, 600), BLACK)) # Right border
-# obstacles.append(Box(Point(390, 298), Point(410, 301), BLACK)) # Border in middle of screen to prevent gamer from cheating
-# obstacles.append(Box(Point(0, 0), Point(800, 3), BLACK)) # Bottom border
-
 new_obstacle = None
 
 symbol = None
@@ -187,27 +165,17 @@ def update(clock):
 
     if check_inside_box(goal, cannonball.position):
         symbol = Symbol(GREEN, "won")
-        print("Goal points:")
-        print("     1: ({}, {})".format(goal.begin_position.x, goal.begin_position.y))
-        print("     2: ({}, {})".format(goal.end_position.x, goal.begin_position.y))
-        print("     3: ({}, {})".format(goal.end_position.x, goal.end_position.y))
-        print("     4: ({}, {})".format(goal.begin_position.x, goal.end_position.y))
-        print()
-        print("Ball points:")
-        print("     ({}, {})".format(cannonball.position.x, cannonball.position.y))
         symbol.draw()
-
-        print("game won")
         reset_game()
     elif check_out_of_bounds(cannonball):
         symbol = Symbol(RED, "lost")
         symbol.draw()
-        print("game lost")
         reset_game()
     else:
         collision_detector(delta_time)
 
         if new_obstacle:
+            symbol = None
             pos = pygame.mouse.get_pos()
             new_end_point = Point(pos[0], max_y - pos[1])
             new_obstacle.end_position = new_end_point
