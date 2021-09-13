@@ -1,10 +1,14 @@
 # Cannonball game
 
 ## How to run
-Run the following command in Terminal where the project is located:
+Run either of the two following commands in Terminal where the project is located (depends on the version of python on your device):
 
 ```bash
 python3 game.py
+```
+
+```bash
+python game.py
 ```
 
 ## How to play
