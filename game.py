@@ -1,3 +1,5 @@
+# Group members: Gunnhildur Skarphéðinsdóttir and Ísól Sigurðardóttir
+
 import pygame
 from pygame.locals import *
 
