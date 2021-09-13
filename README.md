@@ -7,7 +7,7 @@ Run the following command in Terminal where the project is located:
 python3 game.py
 ```
 
-# How to play
+## How to play
 
 The game is to get the cannonball into the goal. The goal is located on the top in the middle (green rectangle). Before you shoot the cannonball you can draw lines, by right-clicking with your mouse and drag, or rectangles by left-clicking with your mouse and drag. This is meant to help you navigate the cannonball into the goal.
 
