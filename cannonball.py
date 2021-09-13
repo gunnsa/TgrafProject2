@@ -20,7 +20,7 @@ class Cannonball:
 
     def draw(self):
         _theta = 0
-        radius = 12
+        radius = 5
         theta = (_theta-90) * math.pi/180
         glPushMatrix()
 

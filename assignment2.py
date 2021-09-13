@@ -24,38 +24,102 @@ from box import Box
 from line import Line
 from cannon import Cannon
 from cannonball import Cannonball
+from symbol import Symbol
 from data import Point, Vector
+
+# Color constants
+BLACK = (0.0, 0.0, 0.0)
+GREEN = (0.5, 1.0, 0.5)
+RED = (1.0, 0.0, 0.0)
 
 x_pos_begin = None
 x_pos_end = None
 y_pos_begin = None
 y_pos_end = None
 
-ball_point = Point(400, 100)
-cannonball = Cannonball(ball_point, Vector(0, 0), ball_point)
+# ball_point = Point(400, 100)
+# cannonball = Cannonball(ball_point, Vector(0, 0), ball_point)
 
-cannon_point = Point(400,10)
-cannon = Cannon(cannon_point, 0, cannonball)
+# cannon_point = Point(400,10)
+# cannon = Cannon(cannon_point, 0, cannonball)
 
-goal_point1 = Point(300, 500)
-goal_point2 = Point(500, 600)
-goal = Box(goal_point1, goal_point2, (0.5, 1.0, 0.5))
+# goal_point1 = Point(300, 550)
+# goal_point2 = Point(500, 597)
+# goal = Box(goal_point1, goal_point2, GREEN)
+
+obstacles = []
+# # Borders around game area
+# obstacles.append(Box(Point(0, 0), Point(3, 600), BLACK)) # Left side border
+# obstacles.append(Box(Point(0, 597), Point(800, 600), BLACK)) # Top left border
+# obstacles.append(Box(Point(297, 600), Point(300, 550), BLACK)) # Left goal border
+# obstacles.append(Box(Point(297, 547), Point(380, 550), BLACK)) # Left bottom border on goal
+# obstacles.append(Box(Point(420, 547), Point(503, 550), BLACK)) # Right bottom border on goal
+# obstacles.append(Box(Point(500, 550), Point(503, 600), BLACK)) # Right goal border
+# # obstacles.append(Box(Point(500, 597), Point(800, 600), BLACK)) # Top right border
+# obstacles.append(Box(Point(797, 0), Point(800, 600), BLACK)) # Right border
+# obstacles.append(Box(Point(390, 298), Point(410, 301), BLACK)) # Border in middle of screen to prevent gamer from cheating
+# obstacles.append(Box(Point(0, 0), Point(800, 3), BLACK)) # Bottom border
 
 new_obstacle = None
+
+symbol = None
 
 max_x = 800
 max_y = 600
 
-size = 60
-
 playing = False
+game_won = False
 
-obstacles = []
 
 def init_game():
     pygame.display.init()
     pygame.display.set_mode((max_x, max_y), DOUBLEBUF | OPENGL)
     glClearColor(1.0, 1.0, 1.0, 1.0)
+    reset_game()
+
+def reset_game():
+    global obstacles, cannonball, cannon, goal, symbol, playing, game_won
+    playing = False
+    game_won = False
+    obstacles = []
+    obstacles.append(Box(Point(0, 30), Point(3, 570), BLACK)) # Left side border
+    obstacles.append(Box(Point(30, 597), Point(770, 600), BLACK)) # Top left border
+    obstacles.append(Box(Point(297, 600), Point(300, 550), BLACK)) # Left goal border
+    obstacles.append(Box(Point(297, 547), Point(380, 550), BLACK)) # Left bottom border on goal
+    obstacles.append(Box(Point(420, 547), Point(503, 550), BLACK)) # Right bottom border on goal
+    obstacles.append(Box(Point(500, 550), Point(503, 600), BLACK)) # Right goal border
+    obstacles.append(Box(Point(797, 30), Point(800, 570), BLACK)) # Right border
+    obstacles.append(Box(Point(390, 298), Point(410, 301), BLACK)) # Border in middle of screen to prevent gamer from cheating
+    obstacles.append(Box(Point(30, 0), Point(770, 3), BLACK)) # Bottom border
+
+    ball_point = Point(400, 100)
+    cannonball = Cannonball(ball_point, Vector(0, 0), ball_point)
+
+    cannon_point = Point(400,10)
+    cannon = Cannon(cannon_point, 0, cannonball)
+
+    goal_point1 = Point(300, 550)
+    goal_point2 = Point(500, 597)
+    goal = Box(goal_point1, goal_point2, GREEN)
+
+def check_inside_box(box, point):
+    global game_won, playing
+    if point.x > box.begin_position.x and point.x < box.end_position.x and point.y > box.begin_position.y and point.y < box.end_position.y:
+        # print("You won")
+        game_won = True
+        playing = False
+        return True
+
+
+def check_out_of_bounds(ball):
+    global playing
+    if ball.position.x < 0 or ball.position.x > 800:
+        playing = False
+        return True
+    if ball.position.y < 0 or ball.position.y > 600:
+        playing = False
+        return True
+
 
 def check_on_line(line, point):
     horizontal_line = line.begin_position.y == line.end_position.y
@@ -77,28 +141,10 @@ def check_on_line(line, point):
         elif (line.begin_position.x <= point.x and line.end_position.x >= point.x and line.begin_position.y <= point.y and line.end_position.y >= point.y) or \
             (line.begin_position.x >= point.x and line.end_position.x <= point.x and line.begin_position.y >= point.y and line.end_position.y <= point.y):
             return True
-    # print(vertical_line)
 
-
-
-    # if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) \
-    #     or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x) \
-    #         or (negative_line and (line.begin_position.y >= p_hit.y and line.end_position.y <= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x)):
-
-    pass
 
 def collision_detector(delta_time):
-    # dynamic check for single point crossing diagonal line
-    # Use formula for intersection of ray with line (explained in “Examples 1” on lecture page)
-    # When t.hit is found, check if that time is within the current frame (between 0 and deltaTime)
-    # If so, check to see if P.hit is between the end points of the line
-    # If so, collision happened!
-
-    # for all obsticles
-    #   check if cannonball collides
-    #   if so: bounce back
     global cannonball, obstacles, playing
-    #delta_time = clock.tick(60) / 1000.0
     lines = []
     if playing:
         for obstacle in obstacles:
@@ -115,7 +161,7 @@ def collision_detector(delta_time):
 
             if isinstance(obstacle, Line):
                 lines.append(obstacle)
-        for index, line in enumerate(lines):
+        for line in lines:
             n = Vector(-1 * (line.end_position.y - line.begin_position.y), line.end_position.x - line.begin_position.x)
             b_min_a = Vector(line.begin_position.x - cannonball.position.x, line.begin_position.y - cannonball.position.y)
             ndotba = (n.x * b_min_a.x) + (n.y * b_min_a.y)
@@ -123,35 +169,48 @@ def collision_detector(delta_time):
             if ndotmotion == 0:
                 ndotmotion = 1
             thit = ndotba / ndotmotion
-            if thit >= 0 and thit <= delta_time:
+            if thit >= 0 and thit < delta_time:
                 t_hit_times_c = Point(thit * cannonball.motion.x, thit * cannonball.motion.y)
-                # p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
                 p_hit = Point(cannonball.position.x + t_hit_times_c.x, cannonball.position.y + t_hit_times_c.y)
-                # if (((b_min_a.x * p_hit_min_a.x) - (b_min_a.y * p_hit_min_a.y)) < abs(1)) or (((b_min_a.y * p_hit_min_a.y) - (b_min_a.x * p_hit_min_a.x)) < abs(1)):
-                # negative_line = (line.begin_position.y - line.end_position.y)/(line.begin_position.x - line.end_position.x ) < 0
                 if check_on_line(line, p_hit):
-                # if (line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x) \
-                #     or (line.end_position.y <= p_hit.y and line.begin_position.y >= p_hit.y and line.end_position.x <= p_hit.x and line.begin_position.x >= p_hit.x) \
-                #         or (negative_line and (line.begin_position.y >= p_hit.y and line.end_position.y <= p_hit.y and line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x)):
                     two_c_dot_n = (2 * (cannonball.motion.x * n.x) + 2 * (cannonball.motion.y * n.y))
                     n_dot_n = (n.x * n.x) + (n.y * n.y)
                     divide = two_c_dot_n / n_dot_n
                     divide_dot_n = Point(divide * n.x, divide * n.y)
                     r = Vector(cannonball.motion.x - divide_dot_n.x, cannonball.motion.y - divide_dot_n.y)
                     cannonball.motion = r
- 
 
-            # if line.begin_position.x <= p_hit.x and line.end_position.x >= p_hit.x and line.begin_position.y <= p_hit.y and line.end_position.y >= p_hit.y:
 
 def update(clock):
+    global cannon, max_y, playing, goal, cannonball, game_won, symbol
     delta_time = clock.tick(60) / 1000.0
 
-    collision_detector(delta_time)
-    global cannon, max_y, playing
-    if new_obstacle:
-        pos = pygame.mouse.get_pos()
-        new_end_point = Point(pos[0], max_y - pos[1])
-        new_obstacle.end_position = new_end_point
+    if check_inside_box(goal, cannonball.position):
+        symbol = Symbol(GREEN, "won")
+        print("Goal points:")
+        print("     1: ({}, {})".format(goal.begin_position.x, goal.begin_position.y))
+        print("     2: ({}, {})".format(goal.end_position.x, goal.begin_position.y))
+        print("     3: ({}, {})".format(goal.end_position.x, goal.end_position.y))
+        print("     4: ({}, {})".format(goal.begin_position.x, goal.end_position.y))
+        print()
+        print("Ball points:")
+        print("     ({}, {})".format(cannonball.position.x, cannonball.position.y))
+        symbol.draw()
+
+        print("game won")
+        reset_game()
+    elif check_out_of_bounds(cannonball):
+        symbol = Symbol(RED, "lost")
+        symbol.draw()
+        print("game lost")
+        reset_game()
+    else:
+        collision_detector(delta_time)
+
+        if new_obstacle:
+            pos = pygame.mouse.get_pos()
+            new_end_point = Point(pos[0], max_y - pos[1])
+            new_obstacle.end_position = new_end_point
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_LEFT]:
@@ -160,10 +219,12 @@ def update(clock):
     if pressed[pygame.K_RIGHT]:
         if cannon.angle > -70:
             cannon.angle -= delta_time * 100
+    if pressed[pygame.K_r]:
+        reset_game()
     if pressed[pygame.K_z]:
         if not playing:
             cannon.child = None
-
+            symbol = None
             new_cannon_point_x = cannon.position.x + (100 * math.cos((cannon.angle + 90) * (math.pi/180)))
             new_cannon_point_y = cannon.position.y + (100 * math.sin((cannon.angle + 90) * (math.pi/180)))
             new_cannon_point = Point(new_cannon_point_x, new_cannon_point_y)
@@ -172,12 +233,14 @@ def update(clock):
 
             cannonball.position = new_cannon_point
             cannonball.motion = motion
+
             playing = True
+
 
 def display(clock):
     delta_time = clock.tick(60) / 1000.0
 
-    global obstacles, cannon, cannonball
+    global obstacles, cannon, cannonball, symbol
     glClear(GL_COLOR_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -196,6 +259,9 @@ def display(clock):
 
     if new_obstacle:
         new_obstacle.draw()
+
+    if symbol:
+        symbol.draw()
 
     for obstacle in obstacles:
         obstacle.draw()
